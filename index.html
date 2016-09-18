@@ -2,11 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Simple Boiler</title>
+  <title>Rock Paper Scissors</title>
+  <link rel="stylesheet" type="text/css" href="./stylesheets/reset.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" href="./stylesheets/styles.css">
 </head>
 <body>
+  <div class = "row" id = "title">
+    <div class = "col-md-3"></div>
+    <div class = "col-md-6 page-header"><h1>Rock Paper Scissors</h1></div>
+    <div class = "col-md-3"></div>
+  </div>
+
+
+  <div class = "row" id = "content">
+    <div class = "col-md-1"></div>
+    
+    <div class = "col-md-4" id = "side1">
+      <div class = "row names">
+        <div class = "col-md-3"></div>
+        <div class = "col-md-6">Player 1</div>
+        <div class = "col-md-3"></div>
+      </div>
+
+      <div class = "row options">
+        <div class = "col-md-4"></div>
+        <div class = "col-md-4">
+          <button class = "btn btn-default" data = "rock">Rock</button>
+          <button class = "btn btn-default" data = "paper">Paper</button>
+          <button class = "btn btn-default" data = "scissors">Scissors</button>
+        </div>
+        <div class = "col-md-4"></div>
+      </div>
+    </div>
+
+    <div class = "col-md-2" id = "middle">
+      <div class = "row" id = "timer">
+      </div>
+
+      <div class = "row" id = "winner">
+        <div class = "col-md-2"></div>
+        <div class = "col-md-8">Player 1 Wins!</div>
+        <div class = "col-md-2"></div>
+      </div>
+    </div>
+
+    <div class = "col-md-4" id = "side2">
+      <div class = "row names">
+        <div class = "col-md-3"></div>
+        <div class = "col-md-6">Player 2</div>
+        <div class = "col-md-3"></div>
+      </div>
+
+      <div class = "row options">
+        <div class = "col-md-4"></div>
+        <div class = "col-md-4">
+          <button class = "btn btn-default" data = "rock">Rock</button>
+          <button class = "btn btn-default" data = "paper">Paper</button>
+          <button class = "btn btn-default" data = "scissors">Scissors</button>
+        </div>
+        <div class = "col-md-4"></div>
+      </div>
+    </div>
+
+    <div class = "col-md-1"></div>
+  </div>
+
+  <div class = "row" id = "chat">
+    <div class = "col-md-3"></div>
+    <div class = "col-md-6" id = "chatbox">Hello!</div>
+    <div class = "col-md-3"></div>
+  </div>
+
+  <div class = "row" id = "message">
+    <div class = "col-md-3"></div>
+    <div class = "col-md-6">
+      <form name = "message">
+        <input name="userMessage" type="text" id="userMessage" size="70" />
+        <input name="submitMessage" type="submit"  id="submitMessage" value="Send" />
+      </form>
+    </div>
+    <div class = "col-md-3"></div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
   <script type="text/javascript" src="./javascripts/main.js"></script>
 </body>
 </html>

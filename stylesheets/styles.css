@@ -1,3 +1,31 @@
 body {
- /* background-color: black;*/
+  text-align: center;
+  background-color: lightblue;
+}
+
+#chatbox {
+  border: 1px solid black;
+}
+
+.row {
+  margin-bottom: 100px;
+}
+
+#chat {
+  margin-bottom: 10px;
+}
+
+#chatbox {
+  height: 300px;
+  text-align: left;
+  background-color: white;
+  padding: 10px;
+}
+
+#side1 {
+  border: 1px solid black;
+}
+
+#side2 {
+  border: 1px solid black;
 }
