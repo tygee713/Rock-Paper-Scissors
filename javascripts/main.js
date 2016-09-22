@@ -12,8 +12,11 @@ var p1Pick = "";
 var p2Pick = "";
 var p1Name = "";
 var p2Name = "";
+// var p1Key;
+// var p2Key;
 var numPlayers = 0;
 var playerNum = 0;
+var connectionKey;
 var hasTwoPlayers = false;
 var p1Wins = 0;
 var p1Losses = 0;
@@ -21,8 +24,6 @@ var p2Wins = 0;
 var p2Losses = 0;
 var players = [];
 var turn;
-var playerRef;
-var turnRef;
 var setTurn = database.ref().child('turn');
 
 //starts the game for each player
@@ -44,8 +45,8 @@ $("#start").on('click', function() {
 
     $('#p' + playerNum + "WL").html("Wins: 0, Losses: 0");
 
-    playerRef = database.ref('/players/' + playerNum);
-    turnRef = database.ref('/turn');
+    //changes the value of the current connection key to the player number
+    database.ref('/connectedData/' + connectionKey).set(playerNum);
   }
   else {
     alert("Two players are already playing!");
@@ -64,22 +65,36 @@ var connectionsRef = database.ref("/connectedData");
 
 var connectedRef = database.ref(".info/connected");
 
-//adds and removed connected data to a separate table, NEED TO REMOVE USER DATA
+//adds and removes connected data to a separate table
 connectedRef.on("value", function(snap) {
-  
   if(snap.val()) {
     var con = connectionsRef.push(true);
-    // var connected = connectionsRef.child(playerNum);
     con.onDisconnect().remove();
-  };
+
+    //doesn't work
+    if (!snap.hasChildren()) {
+      database.ref('/players').remove();
+    }
+  }
 
 });
 
+//when a connection is added to the connected table once per window, set the local connection key to the key of the child added
+connectionsRef.once("child_added", function(snap) {
+  connectionKey = snap.key;
+  console.log(connectionKey);
+});
+
 //attempting to remove the user data when a connected child gets removed, NOT WORKING
-// connectionsRef.on("child_removed", function(snap) {
-//   playerRef.remove();
-//   turnRef.remove();
-// });
+connectionsRef.on("child_removed", function(snap) {
+  console.log(snap.key + " has disconnected.");
+  console.log(snap.val());
+
+  //works for a single player disconnecting, does not work for the last player disconnecting
+  database.ref('/players').child(snap.val()).remove();
+  //remove the turn 
+  database.ref('/turn').remove();
+});
 
 //runs anytime the database is updated
 database.ref().on("value", function(snapshot) {
@@ -123,12 +138,26 @@ database.ref().on("value", function(snapshot) {
     $('#side' + turn).css("border", "1px solid yellow");
   }
 
+  //trying to remove whole players table when no one is connected, DOES NOT WORK
+  // if (!snapshot.child("connectedData").exists()) {
+  //   database.ref('/players').remove();
+  // }
+
+  //currently not using
+  // var key1Snap = p1Snap.child('connectedKey');
+  // var key2Snap = p2Snap.child('connectedKey');
+  // if (key1Snap.exists()) {
+  //   p1Key = key1Snap.val().connectedKey;
+  // }
+  // if (key2Snap.exists()) {
+  //   p2Key = key2Snap.val().connectedKey;
+  // }
+
   //not needed, messed up recording wins/losses
   // var wins1Snap = p1Snap.child('wins');
   // var losses1Snap = p1Snap.child('losses');
   // var wins2Snap = p2Snap.child('wins');
   // var losses2Snap = p2Snap.child('losses');
-
   // if (wins1Snap.exists()) {
   //   p1Wins = p1Snap.val().wins;
   // }
@@ -240,7 +269,7 @@ function updateWinsAndLosses() {
 }
 
 //after the picks have been compared, they get cleared both locally and on the database
-//not needed, combined into updateWinsandLosses
+//NOT NEEDED, combined into updateWinsandLosses
 // function clearPicks() {
 //   p1Pick = "";
 //   p2Pick = "";
