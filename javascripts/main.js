@@ -12,17 +12,14 @@ var p1Pick = "";
 var p2Pick = "";
 var p1Name = "";
 var p2Name = "";
-// var p1Key;
-// var p2Key;
 var numPlayers = 0;
 var playerNum = 0;
+var playerName = "";
 var connectionKey;
-var hasTwoPlayers = false;
 var p1Wins = 0;
 var p1Losses = 0;
 var p2Wins = 0;
 var p2Losses = 0;
-var players = [];
 var turn;
 var setTurn = database.ref().child('turn');
 
@@ -31,22 +28,25 @@ $("#start").on('click', function() {
 
   //checks if two users are already playing
   if (numPlayers < 2) {
-    playerNum = numPlayers + 1;
+    if (p2Name != "") {
+      playerNum = 1;
+    }
+    else {
+      playerNum = numPlayers + 1;
+    }
     player = database.ref('/players').child(playerNum);
-    players.push(player);
+    playerName = $("#userName").val().trim();
 
     //displays the correct player's buttons
-    $('#p' + playerNum + "Buttons").show();
+    $('#p' + playerNum + "Buttons").css('visibility', 'visible');
+
     player.set({ 
-      name: $("#userName").val().trim(),
+      name: playerName,
       wins: '0',
       losses: '0'
     });
 
-    $('#p' + playerNum + "WL").html("Wins: 0, Losses: 0");
-
-    //changes the value of the current connection key to the player number
-    database.ref('/connectedData/' + connectionKey).set(playerNum);
+    $("#p" + playerNum + "WL").html("Wins: 0, Losses: 0");
   }
   else {
     alert("Two players are already playing!");
@@ -57,43 +57,9 @@ $("#start").on('click', function() {
     setTurn.set(turn);
   }
   
+  $("#userName").val("");
+
   return false;
-});
-
-
-var connectionsRef = database.ref("/connectedData");
-
-var connectedRef = database.ref(".info/connected");
-
-//adds and removes connected data to a separate table
-connectedRef.on("value", function(snap) {
-  if(snap.val()) {
-    var con = connectionsRef.push(true);
-    con.onDisconnect().remove();
-
-    //doesn't work
-    if (!snap.hasChildren()) {
-      database.ref('/players').remove();
-    }
-  }
-
-});
-
-//when a connection is added to the connected table once per window, set the local connection key to the key of the child added
-connectionsRef.once("child_added", function(snap) {
-  connectionKey = snap.key;
-  console.log(connectionKey);
-});
-
-//attempting to remove the user data when a connected child gets removed, NOT WORKING
-connectionsRef.on("child_removed", function(snap) {
-  console.log(snap.key + " has disconnected.");
-  console.log(snap.val());
-
-  //works for a single player disconnecting, does not work for the last player disconnecting
-  database.ref('/players').child(snap.val()).remove();
-  //remove the turn 
-  database.ref('/turn').remove();
 });
 
 //runs anytime the database is updated
@@ -108,10 +74,18 @@ database.ref().on("value", function(snapshot) {
   //once the player's names are in the database, store them locally
   if (player1Snap.exists()) {
     p1Name = p1Snap.val().name;
+    $("#player1Name").html(p1Name);
+  }
+  else {
+    $("#player1Name").html("Waiting for Player 1");
   }
 
   if (player2Snap.exists()) {
     p2Name = p2Snap.val().name;
+    $("#player2Name").html(p2Name);
+  }
+  else {
+    $("#player2Name").html("Waiting for Player 2");
   }
 
   var pick1Snap = p1Snap.child('pick');
@@ -133,47 +107,39 @@ database.ref().on("value", function(snapshot) {
 
   var turnSnap = snapshot.child("turn");
 
+  //adjusts the border color of the player boxes depending on the turn
   if (turnSnap.exists()) {
     turn = snapshot.child("turn").val();
-    $('#side' + turn).css("border", "1px solid yellow");
+    if (turn == 1) {
+      $('#side1').css("border", "1px solid yellow");
+      $('#side2').css("border", "1px solid black");
+    }
+    else if (turn == 2) {
+      $('#side1').css("border", "1px solid black");
+      $('#side2').css("border", "1px solid yellow");
+    }
   }
 
-  //trying to remove whole players table when no one is connected, DOES NOT WORK
-  // if (!snapshot.child("connectedData").exists()) {
-  //   database.ref('/players').remove();
-  // }
-
-  //currently not using
-  // var key1Snap = p1Snap.child('connectedKey');
-  // var key2Snap = p2Snap.child('connectedKey');
-  // if (key1Snap.exists()) {
-  //   p1Key = key1Snap.val().connectedKey;
-  // }
-  // if (key2Snap.exists()) {
-  //   p2Key = key2Snap.val().connectedKey;
-  // }
-
-  //not needed, messed up recording wins/losses
-  // var wins1Snap = p1Snap.child('wins');
-  // var losses1Snap = p1Snap.child('losses');
-  // var wins2Snap = p2Snap.child('wins');
-  // var losses2Snap = p2Snap.child('losses');
-  // if (wins1Snap.exists()) {
-  //   p1Wins = p1Snap.val().wins;
-  // }
-  // if (losses1Snap.exists()) {
-  //   p1Losses = p1Snap.val().losses;
-  // }
-  // if (wins2Snap.exists()) {
-  //   p2Wins = p2Snap.val().wins;
-  // }
-  // if (losses2Snap.exists()) {
-  //   p2Losses = p2Snap.val().losses;
-  // }
+  if (numPlayers <= 1) {
+    $('#side1').css("border", "1px solid black");
+    $('#side2').css("border", "1px solid black");
+  }
 
   }, function (errorObject) {
     // 
       console.log("The read failed: " + errorObject.code);
+});
+
+var chatRef = database.ref("/chat");
+
+chatRef.on("value", function(snap) {
+  if (snap.val()) {
+    var msg = $('<p>' + snap.val().message + '</p>');
+    $("#chatbox").append(msg);
+
+    //once chatbox overflows, animate to the new bottom of the div
+    $("#chatbox").animate({scrollTop: $("#chatbox").get(0).scrollHeight}, 400);
+  }
 });
 
 //when any of the player 1 buttons get clicked
@@ -239,9 +205,8 @@ function comparePicks() {
     p2Wins++;
     p1Losses++;
   }
-
+  setTimeout(function() {$("#playerWin").empty()}, 2000);
   updateWinsAndLosses();
-  // clearPicks();
 }
 
 //after each round, update the win count of each player
@@ -268,14 +233,18 @@ function updateWinsAndLosses() {
   $('#p2WL').html("Wins: " + p2Wins + ", Losses: " + p2Losses);
 }
 
-//after the picks have been compared, they get cleared both locally and on the database
-//NOT NEEDED, combined into updateWinsandLosses
-// function clearPicks() {
-//   p1Pick = "";
-//   p2Pick = "";
-//   var pick1Rem = database.ref('/players').child('1').child('pick');
-//   pick1Rem.remove();
-//   var pick2Rem = database.ref('/players').child('2').child('pick');
-//   pick2Rem.remove();
-// }
+//when the last player closes their tab, clear the players info from the database
+window.addEventListener("beforeunload", function (e) {
+  database.ref('/players').child(playerNum).remove();
+  if (numPlayers < 1) {
+    database.ref('/chat').remove();
+    database.ref('/turn').remove();
+  }
+});
 
+//sends the chat message to the database
+$("#submitMessage").on('click', function() {
+  database.ref('/chat').set({message: playerName + ': ' + $("#userMessage").val()});
+  $("#userMessage").val("");
+  return false;
+});

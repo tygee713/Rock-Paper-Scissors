@@ -29,3 +29,15 @@ body {
 #side2 {
   border: 1px solid black;
 }
+
+#p1Buttons {
+  visibility: hidden;
+}
+
+#p2Buttons {
+  visibility: hidden;
+}
+
+#chatbox {
+  overflow: scroll;
+}

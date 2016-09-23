@@ -18,7 +18,7 @@
     <div class = "col-md-4"></div>
     <div class = "col-md-4">
       <form name = "message">
-        <input name="userName" type="text" id="userName" size="16" />
+        <input name="userName" type="text" id="userName" size="16" placeholder = "Your Name"/>
         <input name="submitName" type="submit" id="start" value="Start" />
       </form>
     </div>
@@ -31,13 +31,13 @@
     <div class = "col-md-4" id = "side1">
       <div class = "row names">
         <div class = "col-md-3"></div>
-        <div class = "col-md-6">Player 1</div>
+        <div class = "col-md-6" id="player1Name">Waiting for Player 2</div>
         <div class = "col-md-3"></div>
       </div>
 
       <div class = "row options">
         <div class = "col-md-4"></div>
-        <div class = "col-md-4" id = "p1Buttons" hidden>
+        <div class = "col-md-4" id = "p1Buttons">
           <button class = "btn btn-default optionsP1" data-pick = "rock">Rock</button>
           <button class = "btn btn-default optionsP1" data-pick = "paper">Paper</button>
           <button class = "btn btn-default optionsP1" data-pick = "scissors">Scissors</button>
@@ -67,13 +67,13 @@
     <div class = "col-md-4" id = "side2">
       <div class = "row names">
         <div class = "col-md-3"></div>
-        <div class = "col-md-6">Player 2</div>
+        <div class = "col-md-6" id="player2Name">Waiting for Player 2</div>
         <div class = "col-md-3"></div>
       </div>
 
       <div class = "row options">
         <div class = "col-md-4"></div>
-        <div class = "col-md-4" id = "p2Buttons" hidden>
+        <div class = "col-md-4" id = "p2Buttons">
           <button class = "btn btn-default optionsP2" data-pick = "rock">Rock</button>
           <button class = "btn btn-default optionsP2" data-pick = "paper">Paper</button>
           <button class = "btn btn-default optionsP2" data-pick = "scissors">Scissors</button>
@@ -94,7 +94,7 @@
 
   <div class = "row" id = "chat">
     <div class = "col-md-3"></div>
-    <div class = "col-md-6" id = "chatbox">Hello!</div>
+    <div class = "col-md-6" id = "chatbox"></div>
     <div class = "col-md-3"></div>
   </div>
 
@@ -102,7 +102,7 @@
     <div class = "col-md-3"></div>
     <div class = "col-md-6">
       <form name = "message">
-        <input name="userMessage" type="text" id="userMessage" size="70" />
+        <input name="userMessage" type="text" id="userMessage" size="70" placeholder="Type a message to send"/>
         <input name="submitMessage" type="submit"  id="submitMessage" value="Send" />
       </form>
     </div>
