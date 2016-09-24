@@ -257,7 +257,9 @@ function updateWinsAndLosses() {
 //when the last player closes their tab, clear the players info from the database
 window.addEventListener("beforeunload", function (e) {
   database.ref('/players').child(playerNum).remove();
-  database.ref('/chat').set({message: playerName + ' has disconnected.'});
+  if (playerName != "") {
+    database.ref('/chat').set({message: playerName + ' has disconnected.'});
+  }
   if (numPlayers < 1) {
     database.ref('/chat').remove();
     database.ref('/turn').remove();
