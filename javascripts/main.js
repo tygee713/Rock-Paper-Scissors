@@ -39,6 +39,7 @@ $("#start").on('click', function() {
 
     //displays the correct player's buttons
     $('#p' + playerNum + "Buttons").css('visibility', 'visible');
+    database.ref('/chat').set({message: playerName + ' has connected.'});
 
     player.set({ 
       name: playerName,
@@ -105,6 +106,24 @@ database.ref().on("value", function(snapshot) {
     comparePicks();
   }
 
+  var wins1Snap = p1Snap.child('wins');
+  var losses1Snap = p1Snap.child('losses');
+  var wins2Snap = p2Snap.child('wins');
+  var losses2Snap = p2Snap.child('losses');
+
+  if (wins1Snap.exists() && losses1Snap.exists()) {
+    $('#p1WL').html("Wins: " + p1Snap.val().wins + ", Losses: " + p1Snap.val().losses);
+  }
+  else {
+    $('#p1WL').empty();
+  }
+  if (wins2Snap.exists() && losses2Snap.exists()) {
+    $('#p2WL').html("Wins: " + p2Snap.val().wins + ", Losses: " + p2Snap.val().losses);
+  }
+  else {
+    $('#p2WL').empty();
+  }
+
   var turnSnap = snapshot.child("turn");
 
   //adjusts the border color of the player boxes depending on the turn
@@ -132,10 +151,13 @@ database.ref().on("value", function(snapshot) {
 
 var chatRef = database.ref("/chat");
 
+//updates both players' chat boxes with the latest message
 chatRef.on("value", function(snap) {
   if (snap.val()) {
     var msg = $('<p>' + snap.val().message + '</p>');
-    $("#chatbox").append(msg);
+    if (playerNum > 0) {
+      $("#chatbox").append(msg);
+    }
 
     //once chatbox overflows, animate to the new bottom of the div
     $("#chatbox").animate({scrollTop: $("#chatbox").get(0).scrollHeight}, 400);
@@ -229,13 +251,13 @@ function updateWinsAndLosses() {
     losses: p2Losses
   });
 
-  $('#p1WL').html("Wins: " + p1Wins + ", Losses: " + p1Losses);
-  $('#p2WL').html("Wins: " + p2Wins + ", Losses: " + p2Losses);
+  
 }
 
 //when the last player closes their tab, clear the players info from the database
 window.addEventListener("beforeunload", function (e) {
   database.ref('/players').child(playerNum).remove();
+  database.ref('/chat').set({message: playerName + ' has disconnected.'});
   if (numPlayers < 1) {
     database.ref('/chat').remove();
     database.ref('/turn').remove();
@@ -244,7 +266,12 @@ window.addEventListener("beforeunload", function (e) {
 
 //sends the chat message to the database
 $("#submitMessage").on('click', function() {
-  database.ref('/chat').set({message: playerName + ': ' + $("#userMessage").val()});
+  if (playerNum > 0) {
+    database.ref('/chat').set({message: playerName + ': ' + $("#userMessage").val()});
+  }
+  else {
+    alert("Please start the game in order to chat!");
+  }
   $("#userMessage").val("");
   return false;
 });

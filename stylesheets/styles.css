@@ -8,7 +8,7 @@ body {
 }
 
 .row {
-  margin-bottom: 100px;
+  margin-bottom: 50px;
 }
 
 #chat {
@@ -16,7 +16,7 @@ body {
 }
 
 #chatbox {
-  height: 300px;
+  height: 200px;
   text-align: left;
   background-color: white;
   padding: 10px;
@@ -40,4 +40,30 @@ body {
 
 #chatbox {
   overflow: scroll;
+}
+
+#player1Name {
+  font-size: 22px;
+  margin-top: 10px;
+}
+
+#player2Name {
+  font-size: 22px;
+  margin-top: 10px;
+}
+
+.winloss {
+  margin-bottom: 20px;
+}
+
+#title {
+  margin-bottom: 30px;
+}
+
+#userMessage {
+  padding: 2px 2px 2px 4px;
+}
+
+p {
+  margin-bottom: 2px;
 }
